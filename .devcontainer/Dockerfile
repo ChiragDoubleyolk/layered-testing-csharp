@@ -1,5 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0.402
-# For other base images, check https://hub.docker.com/_/microsoft-dotnet-sdk/
+FROM mcr.microsoft.com/dotnet/sdk:6.0.102
+# Version last checked on 09 Feb 2022
+# More recent images may be available at https://hub.docker.com/_/microsoft-dotnet-sdk/
 
 RUN apt-get update && \
    apt-get upgrade -y && \
