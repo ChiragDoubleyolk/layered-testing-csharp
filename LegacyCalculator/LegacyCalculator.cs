@@ -8,35 +8,34 @@ namespace Gas
    {
       public IPlannedStart Calculate(List<DateTime> dates, int requiredDays = 1)
       {
-         dates.Sort((a, b) => a.CompareTo(b));
-
-         var plannedStart = new PlannedStart { StartTime = DateTime.MinValue, Count = 0 };
+         PlannedStart plannedStart = new PlannedStart { StartTime = DateTime.MinValue, Count = 0 };
 
          // check if dates no items then return early
          if (dates.Count == 0)
          {
             return plannedStart;
-         }
+         }                  
+         
+         DateTime startingDayOfFirstWeek = dates.Min();
+         // add a week 
+         DateTime startingDayOfSecondWeek = startingDayOfFirstWeek.AddDays(7);
+         // Calculating ending day of second week
+         DateTime endingDayOfSecondWeek = startingDayOfSecondWeek.AddDays(7);
 
-         var requiredNumberInFirstWeek = requiredDays;
-
-         var startOfFirstWeek = dates[0];
-         // add a week
-         var startOfSecondWeek = startOfFirstWeek.AddMilliseconds(7 * 24 * 60 * 60 * 1000);
-
-         var countsForFirstWeek = dates
-            .Where(x => x > startOfFirstWeek && x < startOfFirstWeek.AddMilliseconds(7 * 24 * 60 * 60 * 1000)) // add a week
+         dates = dates.Where(x => x > startingDayOfFirstWeek && x < endingDayOfSecondWeek).ToList();
+         int countsForFirstWeek = dates
+            .Where(x => x > startingDayOfFirstWeek && x < startingDayOfSecondWeek) // add a week
+            .Count()
+            ;
+         
+         int countsForSecondWeek = dates
+            .Where(x => x > startingDayOfSecondWeek && x < endingDayOfSecondWeek) // add a week
             .Count()
             ;
 
-         var countsForSecondWeek = dates
-            .Where(x => x > startOfSecondWeek && x < startOfSecondWeek.AddMilliseconds(7 * 24 * 60 * 60 * 1000)) // add a week
-            .Count()
-            ;
-
-         if (countsForSecondWeek > countsForFirstWeek && countsForSecondWeek >= requiredNumberInFirstWeek)
+         if (countsForSecondWeek > countsForFirstWeek && countsForSecondWeek >= requiredDays)
          {
-            plannedStart = new PlannedStart { StartTime = startOfSecondWeek, Count = countsForSecondWeek };
+            plannedStart = new PlannedStart { StartTime = startingDayOfSecondWeek, Count = countsForSecondWeek };
          }
          return plannedStart;
       }
